@@ -429,6 +429,11 @@ button:disabled {
   color: var(--green);
 }
 
+/* The order shown below: outlined in ink. */
+.waiting button.here {
+  box-shadow: inset 0 0 0 3px var(--ink);
+}
+
 .waiting i {
   margin-left: 4px;
   font-style: normal;

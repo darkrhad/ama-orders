@@ -145,14 +145,21 @@ function CurrentOrder(props: {
   onDelete: () => void;
 }) {
   const { order } = props;
-  const waiting = props.waiting.filter((w) => w.id !== order?.id);
+  // Every open order stays in the strip, the one shown below highlighted.
+  const waiting = [...props.waiting];
+  if (order && order.items.length > 0 && !waiting.some((w) => w.id === order.id)) waiting.push(order);
+  waiting.sort((a, b) => a.no - b.no);
   return (
     <aside className="current">
       {waiting.length > 0 && (
         <div className="waiting">
           <span>Open</span>
           {waiting.map((w) => (
-            <button key={w.id} className={w.paid ? 'paid' : 'unpaid'} onClick={() => props.onOpen(w.id)}>
+            <button
+              key={w.id}
+              className={`${w.paid ? 'paid' : 'unpaid'} ${w.id === order?.id ? 'here' : ''}`}
+              onClick={() => (w.id === order?.id ? props.onClose() : props.onOpen(w.id))}
+            >
               #{w.no} <small>{w.paid ? 'paid' : rsd(orderTotal(w))}</small>
               {!w.delivered && <i title="Preparing">●</i>}
             </button>
