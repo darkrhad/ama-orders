@@ -10,6 +10,7 @@ export type Item = {
   price: number;
   ice?: boolean;
   chilli?: boolean;
+  addedAt?: number;
 };
 
 export type Order = {
@@ -19,11 +20,19 @@ export type Order = {
   createdAt: number;
   items: Item[];
   paid: boolean;
+  payment?: Payment;
   delivered?: boolean;
+  deliveredAt?: number; // last time it was marked delivered
 };
 
 // Still needs something: payment or delivery.
 export const isOpen = (o: Order) => o.items.length > 0 && !(o.paid && o.delivered);
+
+export type Payment = 'cash' | 'card';
+
+// Added after the order was delivered (a table asking for more): still to make.
+export const isNew = (o: Order, i: Item) =>
+  !o.delivered && o.deliveredAt !== undefined && (i.addedAt ?? 0) > o.deliveredAt;
 
 type State = { orders: Order[]; currentId: string | null };
 
@@ -67,12 +76,15 @@ export function useOrders() {
     setState((s) => ({ ...s, orders: s.orders.map((o) => (o.id === id ? fn(o) : o)) }));
 
   const add = (p: Product, opt: Partial<Item> = {}) => {
-    const item: Item = { uid: uid(), productId: p.id, name: p.name, price: p.price, ice: p.ice, chilli: p.chilli, ...opt };
+    const item: Item = { uid: uid(), productId: p.id, name: p.name, price: p.price, ice: p.ice, chilli: p.chilli, addedAt: Date.now(), ...opt };
     setState((s) => {
       const today = dayKey(Date.now());
-      const open = s.orders.find((o) => o.id === s.currentId && o.day === today);
+      // A paid order is never added to: the extras would hide as paid. Start a new one instead.
+      const open = s.orders.find((o) => o.id === s.currentId && o.day === today && !o.paid);
       if (open) {
-        return { ...s, orders: s.orders.map((o) => (o.id === open.id ? { ...o, items: [...o.items, item] } : o)) };
+        // More items for a delivered order go back to the kitchen.
+        const next = { ...open, items: [...open.items, item], delivered: false };
+        return { ...s, orders: s.orders.map((o) => (o.id === open.id ? next : o)) };
       }
       const no = Math.max(0, ...s.orders.filter((o) => o.day === today).map((o) => o.no)) + 1;
       const order: Order = { id: uid(), no, day: today, createdAt: Date.now(), items: [item], paid: false };
@@ -91,8 +103,11 @@ export function useOrders() {
         ...o,
         items: o.items.map((i) => (i.uid === itemUid ? { ...i, [opt]: !i[opt] } : i)),
       })),
-    setPaid: (orderId: string, paid: boolean) => updateOrder(orderId, (o) => ({ ...o, paid })),
-    setDelivered: (orderId: string, delivered: boolean) => updateOrder(orderId, (o) => ({ ...o, delivered })),
+    // null = not paid yet
+    setPaid: (orderId: string, payment: Payment | null) =>
+      updateOrder(orderId, (o) => ({ ...o, paid: payment !== null, payment: payment ?? undefined })),
+    setDelivered: (orderId: string, delivered: boolean) =>
+      updateOrder(orderId, (o) => (delivered ? { ...o, delivered, deliveredAt: Date.now() } : { ...o, delivered })),
     open: (orderId: string) => setState((s) => ({ ...s, currentId: orderId })),
     close: () => setState((s) => ({ ...s, currentId: null })),
     remove: (orderId: string) =>

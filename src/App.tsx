@@ -1,11 +1,34 @@
 import { useState } from 'react';
 import { CATEGORIES, MENU, rsd, type Category, type Product } from './menu';
-import { dayKey, isOpen, orderTotal, useOrders, type Item, type Order } from './orders';
+import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order, type Payment } from './orders';
 
 type Tab = 'menu' | 'orders';
 
 const time = (t: number) =>
   new Date(t).toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
+
+const paidLabel = (o: Order) => (o.payment === 'card' ? '💳 Card ✓' : o.payment === 'cash' ? '💵 Cash ✓' : 'Paid ✓');
+
+// Not paid: one tap on Cash or Card. Paid: one tap undoes it.
+function PayButtons({ order, onPaid }: { order: Order; onPaid: (p: Payment | null) => void }) {
+  if (order.paid) {
+    return (
+      <button className="status paid" onClick={() => onPaid(null)}>
+        {paidLabel(order)}
+      </button>
+    );
+  }
+  return (
+    <>
+      <button className="status unpaid" onClick={() => onPaid('cash')}>
+        💵 Cash
+      </button>
+      <button className="status unpaid" onClick={() => onPaid('card')}>
+        💳 Card
+      </button>
+    </>
+  );
+}
 
 export default function App() {
   const o = useOrders();
@@ -114,14 +137,15 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
   );
 }
 
-type Group = { key: string; name: string; price: number; ice?: boolean; chilli?: boolean; uids: string[] };
+type Group = { key: string; name: string; price: number; ice?: boolean; chilli?: boolean; fresh: boolean; uids: string[] };
 
 // Same product with the same options shows as one line, "2×".
-function group(items: Item[]): Group[] {
+function group(o: Order): Group[] {
   const groups = new Map<string, Group>();
-  for (const i of items) {
-    const key = `${i.productId}|${i.ice}|${i.chilli}`;
-    const g = groups.get(key) ?? { key, name: i.name, price: i.price, ice: i.ice, chilli: i.chilli, uids: [] };
+  for (const i of o.items) {
+    const fresh = isNew(o, i);
+    const key = `${i.productId}|${i.ice}|${i.chilli}|${fresh}`;
+    const g = groups.get(key) ?? { key, name: i.name, price: i.price, ice: i.ice, chilli: i.chilli, fresh, uids: [] };
     g.uids.push(i.uid);
     groups.set(key, g);
   }
@@ -134,7 +158,7 @@ function CurrentOrder(props: {
   onOpen: (id: string) => void;
   onRemoveItem: (uid: string) => void;
   onToggle: (uid: string, opt: 'ice' | 'chilli') => void;
-  onPaid: (paid: boolean) => void;
+  onPaid: (payment: Payment | null) => void;
   onDelivered: (delivered: boolean) => void;
   onClose: () => void;
   onDelete: () => void;
@@ -148,7 +172,7 @@ function CurrentOrder(props: {
           <span>Open</span>
           {waiting.map((w) => (
             <button key={w.id} className={w.paid ? 'paid' : 'unpaid'} onClick={() => props.onOpen(w.id)}>
-              #{w.no} <small>{w.paid ? 'paid' : rsd(orderTotal(w))}</small>
+              #{w.no} <small>{w.paid ? (w.payment ?? 'paid') : rsd(orderTotal(w))}</small>
               {!w.delivered && <i title="Preparing">●</i>}
             </button>
           ))}
@@ -167,9 +191,7 @@ function CurrentOrder(props: {
             <span className="time">{time(order.createdAt)}</span>
           </div>
           <div className="statuses">
-            <button className={`status ${order.paid ? 'paid' : 'unpaid'}`} onClick={() => props.onPaid(!order.paid)}>
-              {order.paid ? 'Paid ✓' : 'Not paid'}
-            </button>
+            <PayButtons order={order} onPaid={props.onPaid} />
             <button className={`status ${order.delivered ? 'delivered' : 'preparing'}`} onClick={() => props.onDelivered(!order.delivered)}>
               {order.delivered ? 'Delivered ✓' : 'Preparing'}
             </button>
@@ -177,13 +199,16 @@ function CurrentOrder(props: {
 
           <ul className="lines">
             {order.items.length === 0 && <li className="hint">Empty. Tap products to add them.</li>}
-            {group(order.items).map((g) => {
+            {group(order).map((g) => {
               const last = g.uids[g.uids.length - 1];
               return (
                 <li key={g.key}>
                   <div className="line-main">
                     <span className="qty">{g.uids.length > 1 ? `${g.uids.length}×` : ''}</span>
-                    <span className="name">{g.name}</span>
+                    <span className="name">
+                      {g.name}
+                      {g.fresh && <span className="new">NEW</span>}
+                    </span>
                     <span className="price">{rsd(g.price * g.uids.length)}</span>
                     <button className="remove" onClick={() => props.onRemoveItem(last)} aria-label="Remove one">
                       −
@@ -211,26 +236,31 @@ function CurrentOrder(props: {
             <strong>{rsd(orderTotal(order))}</strong>
           </div>
 
-          <div className="finish">
-            <button
-              className="finish-paid"
-              onClick={() => {
-                props.onPaid(true);
-                props.onClose();
-              }}
-            >
-              Paid ✓ · next
-            </button>
-            <button
-              className="finish-later"
-              onClick={() => {
-                props.onPaid(false);
-                props.onClose();
-              }}
-            >
-              Pay later · next
-            </button>
-          </div>
+          {order.paid ? (
+            <div className="finish">
+              <button className="finish-paid" onClick={props.onClose}>
+                Next customer
+              </button>
+            </div>
+          ) : (
+            <div className="finish">
+              {(['cash', 'card'] as const).map((p) => (
+                <button
+                  key={p}
+                  className="finish-paid"
+                  onClick={() => {
+                    props.onPaid(p);
+                    props.onClose();
+                  }}
+                >
+                  {p === 'cash' ? '💵 Cash · next' : '💳 Card · next'}
+                </button>
+              ))}
+              <button className="finish-later" onClick={props.onClose}>
+                Pay later · next
+              </button>
+            </div>
+          )}
           <button
             className="delete"
             onClick={() => {
@@ -248,7 +278,7 @@ function CurrentOrder(props: {
 function OrdersList(props: {
   orders: Order[];
   currentId: string | null;
-  onPaid: (id: string, paid: boolean) => void;
+  onPaid: (id: string, payment: Payment | null) => void;
   onDelivered: (id: string, delivered: boolean) => void;
   onOpen: (id: string) => void;
 }) {
@@ -264,7 +294,8 @@ function OrdersList(props: {
     ? ofDay.filter(isOpen).sort((a, b) => a.createdAt - b.createdAt)
     : [...ofDay].sort((a, b) => b.createdAt - a.createdAt);
   const sum = (list: Order[]) => list.reduce((s, o) => s + orderTotal(o), 0);
-  const paidTotal = sum(ofDay.filter((o) => o.paid));
+  const cardTotal = sum(ofDay.filter((o) => o.paid && o.payment === 'card'));
+  const cashTotal = sum(ofDay.filter((o) => o.paid && o.payment !== 'card'));
   const unpaidTotal = sum(ofDay.filter((o) => !o.paid));
 
   const sold = new Map<string, number>();
@@ -299,8 +330,12 @@ function OrdersList(props: {
           <strong>{ofDay.length}</strong>
         </div>
         <div>
-          <span>Paid</span>
-          <strong className="paid">{rsd(paidTotal)}</strong>
+          <span>💵 Cash</span>
+          <strong className="paid">{rsd(cashTotal)}</strong>
+        </div>
+        <div>
+          <span>💳 Card</span>
+          <strong className="paid">{rsd(cardTotal)}</strong>
         </div>
         <div>
           <span>Not paid</span>
@@ -308,7 +343,7 @@ function OrdersList(props: {
         </div>
         <div>
           <span>Total</span>
-          <strong>{rsd(paidTotal + unpaidTotal)}</strong>
+          <strong>{rsd(cashTotal + cardTotal + unpaidTotal)}</strong>
         </div>
       </div>
 
@@ -322,17 +357,20 @@ function OrdersList(props: {
                 <span className="time">{time(o.createdAt)}</span>
                 <span className="card-total">{rsd(orderTotal(o))}</span>
               </div>
-              <p className="card-items">{summarize(o)}</p>
+              <p className="card-items">{summarize(o.items.filter((i) => !isNew(o, i)))}</p>
+              {o.items.some((i) => isNew(o, i)) && (
+                <p className="card-items card-new">
+                  <span className="new">NEW</span> {summarize(o.items.filter((i) => isNew(o, i)))}
+                </p>
+              )}
               <div className="card-actions">
-                <button className={`status ${o.paid ? 'paid' : 'unpaid'}`} onClick={() => props.onPaid(o.id, !o.paid)}>
-                  {o.paid ? 'Paid ✓' : 'Not paid'}
-                </button>
+                <PayButtons order={o} onPaid={(p) => props.onPaid(o.id, p)} />
                 <button className={`status ${o.delivered ? 'delivered' : 'preparing'}`} onClick={() => props.onDelivered(o.id, !o.delivered)}>
                   {o.delivered ? 'Delivered ✓' : 'Preparing'}
                 </button>
                 {o.day === today && (
                   <button className="open" onClick={() => props.onOpen(o.id)}>
-                    {o.id === props.currentId ? 'Open now' : 'Open / add'}
+                    {o.id === props.currentId ? 'Open now' : o.paid ? 'Open' : 'Open / add'}
                   </button>
                 )}
               </div>
@@ -358,9 +396,9 @@ function OrdersList(props: {
 }
 
 // "2× Cà phê sữa (ice), Bánh mì heo quay (no chilli)"
-function summarize(o: Order) {
+function summarize(items: Item[]) {
   const counts = new Map<string, number>();
-  for (const i of o.items) {
+  for (const i of items) {
     const opts = [i.ice === undefined ? '' : i.ice ? 'ice' : 'no ice', i.chilli === undefined ? '' : i.chilli ? 'chilli' : 'no chilli'].filter(Boolean);
     const key = opts.length ? `${i.name} (${opts.join(', ')})` : i.name;
     counts.set(key, (counts.get(key) ?? 0) + 1);
