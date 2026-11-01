@@ -81,14 +81,12 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
                   : null;
             return (
               <div key={p.id} className={`product ${n > 0 ? 'in' : ''}`}>
+                {n > 0 && <span className="count">×{n}</span>}
                 <button className="product-main" onClick={() => onAdd(p)}>
                   <span className="name">{p.name}</span>
                   <span className="sub">{p.sub}</span>
                   <span className="foot">
-                    <span className="price">
-                      {rsd(p.price)}
-                      {n > 0 && <span className="count">×{n}</span>}
-                    </span>
+                    <span className="price">{rsd(p.price)}</span>
                     <ProductArt id={p.id} />
                   </span>
                 </button>
