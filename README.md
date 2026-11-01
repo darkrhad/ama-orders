@@ -6,6 +6,7 @@ Firestore, only when tapped.
 
 - Menu and prices: `src/menu.ts` (RSD).
 - `npm run dev` → http://localhost:5300 (also on the Wi-Fi address, for the iPad).
+- Live: https://darkrhad.github.io/ama-orders/ (GitHub Pages, deployed by `.github/workflows/pages.yml` on every push to `main`; Firebase config from the repo's Actions variables).
 - Offline start needs the https site (service worker, `public/sw.js`); the dev server has none.
 
 ## Backup setup (once)
@@ -16,7 +17,7 @@ Firestore, only when tapped.
    the café login (email + password).
 4. **Firestore → Rules**: paste `firestore.rules` (it allows only the café user's UID) → **Publish**.
 5. **Project settings → Your apps → Web (`</>`)** → register an app → copy the config into
-   `.env.local` (names in `.env.example`), and on Vercel as environment variables.
+   `.env.local` (names in `.env.example`), and as repository variables on GitHub.
 6. On the iPad: tap **☁ Backup**, sign in once with the café login.
 
 Backups land in Firestore as `orders/{id}`, one document per order. Deleting an order

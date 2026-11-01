@@ -2,9 +2,11 @@
 // Serves from the cache first and refreshes it in the background;
 // a new version shows up on the next open.
 const CACHE = 'ama-orders-v1';
+// Paths are relative to this file, so it works under /ama-orders/ on GitHub Pages.
+const HOME = new URL('./', self.location).href;
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['/', '/manifest.webmanifest', '/icon.svg', '/icon-180.png'])));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll([HOME, 'manifest.webmanifest', 'icon.svg', 'icon-180.png'])));
   self.skipWaiting();
 });
 
@@ -13,7 +15,7 @@ self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
-  const key = req.mode === 'navigate' ? '/' : req;
+  const key = req.mode === 'navigate' ? HOME : req;
   e.respondWith(
     caches.open(CACHE).then(async (cache) => {
       const hit = await cache.match(key);

@@ -9,7 +9,7 @@ import App from './App';
 
 // Offline: the service worker keeps the app itself on the device (https only, so not in dev).
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {});
 }
 
 createRoot(document.getElementById('root')!).render(
