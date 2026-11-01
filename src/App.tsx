@@ -74,9 +74,9 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
             const n = inOrder(p.id);
             const split =
               p.ice !== undefined
-                ? ([['🧊 Ice', { ice: true }], ['No ice', { ice: false }]] as const)
+                ? ([['🧊 Ice', { ice: true }], ['🚫 No ice', { ice: false }]] as const)
                 : p.chilli !== undefined
-                  ? ([['🌶 Chilli', { chilli: true }], ['No chilli', { chilli: false }]] as const)
+                  ? ([['🌶 Chilli', { chilli: true }], ['🚫 No chilli', { chilli: false }]] as const)
                   : null;
             return (
               <div key={p.id} className={`product ${n > 0 ? 'in' : ''}`}>
@@ -198,17 +198,17 @@ function CurrentOrder(props: {
                   <div className="line-opts">
                     {g.ice !== undefined && (
                       <button className={`opt ${g.ice ? 'ice' : 'hot'}`} onClick={() => props.onToggle(last, 'ice')}>
-                        {g.ice ? '🧊 Ice' : 'No ice'}
+                        {g.ice ? '🧊 Ice' : '🚫 No ice'}
                       </button>
                     )}
                     {g.chilli !== undefined && (
                       <button className={`opt ${g.chilli ? 'chilli' : 'mild'}`} onClick={() => props.onToggle(last, 'chilli')}>
-                        {g.chilli ? '🌶 Chilli' : 'No chilli'}
+                        {g.chilli ? '🌶 Chilli' : '🚫 No chilli'}
                       </button>
                     )}
                     {g.cilantro !== undefined && (
                       <button className={`opt ${g.cilantro ? 'cilantro' : 'plain'}`} onClick={() => props.onToggle(last, 'cilantro')}>
-                        {g.cilantro ? '🌿 Cilantro' : 'No cilantro'}
+                        {g.cilantro ? '🌿 Cilantro' : '🚫 No cilantro'}
                       </button>
                     )}
                   </div>
@@ -375,14 +375,14 @@ function OrdersList(props: {
   );
 }
 
-// "2× Cà phê sữa (🧊 ice), Bánh mì heo quay (no chilli, 🌿 cilantro)"
+// "2× Cà phê sữa (🧊 ice), Bánh mì heo quay (🚫 no chilli, 🌿 cilantro)"
 function summarize(items: Item[]) {
   const counts = new Map<string, number>();
   for (const i of items) {
     const opts = [
-      i.ice === undefined ? '' : i.ice ? '🧊 ice' : 'no ice',
-      i.chilli === undefined ? '' : i.chilli ? '🌶 chilli' : 'no chilli',
-      i.cilantro === undefined ? '' : i.cilantro ? '🌿 cilantro' : 'no cilantro',
+      i.ice === undefined ? '' : i.ice ? '🧊 ice' : '🚫 no ice',
+      i.chilli === undefined ? '' : i.chilli ? '🌶 chilli' : '🚫 no chilli',
+      i.cilantro === undefined ? '' : i.cilantro ? '🌿 cilantro' : '🚫 no cilantro',
     ].filter(Boolean);
     const key = opts.length ? `${i.name} (${opts.join(', ')})` : i.name;
     counts.set(key, (counts.get(key) ?? 0) + 1);
