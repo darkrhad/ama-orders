@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ProductArt from './Art';
 import Backup from './Backup';
+import FullScreen from './FullScreen';
 import { CATEGORIES, MENU, rsd, type Category, type Product } from './menu';
 import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order } from './orders';
 
@@ -29,6 +30,7 @@ export default function App() {
             Orders{open.length > 0 && <span className="badge">{open.length} open</span>}
           </button>
           <Backup orders={o.orders} deleted={o.deleted} onDone={o.clearDeleted} />
+          <FullScreen />
         </nav>
       </header>
 

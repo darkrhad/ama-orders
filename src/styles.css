@@ -113,6 +113,17 @@ button:disabled {
   align-items: center;
 }
 
+.fullscreen {
+  margin-left: 8px;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 2px solid #5a4030 !important;
+  color: var(--cream);
+  font-size: 24px;
+  line-height: 1;
+}
+
 .backup {
   margin-left: 10px;
   padding: 6px 14px;
