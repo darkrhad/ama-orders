@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProductArt from './Art';
 import Backup from './Backup';
 import FullScreen from './FullScreen';
@@ -101,6 +101,21 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product) => vo
       {renderCat('drinks')}
       {renderCat('beans')}
     </section>
+  );
+}
+
+// Two taps instead of a browser confirm(), which would end full screen.
+function DeleteButton({ no, onDelete }: { no: number; onDelete: () => void }) {
+  const [armed, setArmed] = useState(false);
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(false), 4000);
+    return () => clearTimeout(t);
+  }, [armed]);
+  return (
+    <button className={`delete ${armed ? 'armed' : ''}`} onClick={() => (armed ? onDelete() : setArmed(true))}>
+      {armed ? `Tap again to delete #${no}` : 'Delete order'}
+    </button>
   );
 }
 
@@ -239,14 +254,7 @@ function CurrentOrder(props: {
               </button>
             </div>
           )}
-          <button
-            className="delete"
-            onClick={() => {
-              if (confirm(`Delete order #${order.no}?`)) props.onDelete();
-            }}
-          >
-            Delete order
-          </button>
+          <DeleteButton key={order.id} no={order.no} onDelete={props.onDelete} />
         </>
       )}
     </aside>

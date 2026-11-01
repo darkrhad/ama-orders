@@ -622,6 +622,16 @@ button:disabled {
   text-decoration: underline;
 }
 
+.delete.armed {
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--red);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 /* ---------- orders screen ---------- */
 
 .orders-screen {
