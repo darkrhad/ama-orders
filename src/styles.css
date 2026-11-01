@@ -891,8 +891,8 @@ button:disabled {
 }
 
 .art {
-  width: clamp(28px, 3.2vw, 44px);
-  height: clamp(28px, 3.2vw, 44px);
+  width: clamp(24px, 2.6vw, 34px);
+  height: clamp(24px, 2.6vw, 34px);
   margin-left: auto;
   margin-bottom: -2px;
 }

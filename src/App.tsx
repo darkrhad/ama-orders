@@ -84,7 +84,8 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
                 {n > 0 && <span className="count">×{n}</span>}
                 <button className="product-main" onClick={() => onAdd(p)}>
                   <span className="name">{p.name}</span>
-                  <span className="sub">{p.sub}</span>
+                  {/* Only the Vietnamese name; the beans keep their strength. */}
+                  {p.cat === 'beans' && <span className="sub">{p.sub}</span>}
                   <span className="foot">
                     <span className="price">{rsd(p.price)}</span>
                     <ProductArt id={p.id} />
