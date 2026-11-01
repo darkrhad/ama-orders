@@ -65,7 +65,8 @@ export default function App() {
   );
 }
 
-function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?: Partial<Item>) => void }) {
+// One tap adds the product with its defaults (with chilli, cilantro, ice); change them on the order line.
+function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product) => void }) {
   const inOrder = (id: string) => order?.items.filter((i) => i.productId === id).length ?? 0;
   const renderCat = (id: Category) => {
     const c = CATEGORIES.find((x) => x.id === id)!;
@@ -75,12 +76,6 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
         <div className="grid">
           {MENU.filter((p) => p.cat === c.id).map((p) => {
             const n = inOrder(p.id);
-            const split =
-              p.ice !== undefined
-                ? ([['🧊 Ice', { ice: true }], ['🚫 No ice', { ice: false }]] as const)
-                : p.chilli !== undefined
-                  ? ([['🌶 Chilli', { chilli: true }], ['🚫 No chilli', { chilli: false }]] as const)
-                  : null;
             return (
               <div key={p.id} className={`product ${n > 0 ? 'in' : ''}`}>
                 {n > 0 && <span className="count">×{n}</span>}
@@ -92,15 +87,6 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
                   </span>
                   <ProductArt id={p.id} />
                 </button>
-                {split && (
-                  <div className="halves">
-                    {split.map(([label, opt]) => (
-                      <button key={label} onClick={() => onAdd(p, opt)}>
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
             );
           })}
@@ -112,10 +98,8 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
     <section className="menu">
       {renderCat('coffee')}
       {renderCat('food')}
-      <div className="row">
-        {renderCat('beans')}
-        {renderCat('drinks')}
-      </div>
+      {renderCat('drinks')}
+      {renderCat('beans')}
     </section>
   );
 }

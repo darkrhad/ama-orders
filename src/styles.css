@@ -261,33 +261,10 @@ button:disabled {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
 }
 
-.cat-drinks .grid {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.menu .row {
-  display: grid;
-  grid-template-columns: 3fr 4fr;
-  gap: 12px;
-}
-
-/* Beans and drinks share a row: both groups stretch, so every tile in it has the same height. */
-.menu .row > .cat {
-  display: flex;
-  flex-direction: column;
-}
-
-.menu .row .grid {
-  flex: 1;
-}
-
-.cat-beans .grid {
-  grid-template-columns: repeat(3, 1fr);
-}
 
 .product {
   position: relative;
@@ -847,11 +824,7 @@ button:disabled {
   }
 
   .grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .menu .row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .orders-body {
@@ -906,4 +879,14 @@ button:disabled {
   flex: none;
   width: clamp(24px, 2.6vw, 34px);
   height: clamp(24px, 2.6vw, 34px);
+}
+/* Same height for every tile: two-line names on wide screens, three on narrower ones. */
+.product {
+  min-height: 58px;
+}
+
+@media (max-width: 1240px) and (min-width: 1001px) {
+  .product {
+    min-height: 96px;
+  }
 }

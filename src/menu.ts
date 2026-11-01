@@ -25,7 +25,7 @@ export const MENU: Product[] = [
   { id: 'cf-sua', cat: 'coffee', name: 'Cà phê sữa', sub: 'Coffee, condensed milk', price: 320, ice: true },
   { id: 'cf-muoi', cat: 'coffee', name: 'Cà phê muối', sub: 'Salted coffee', price: 390, ice: true },
   { id: 'cf-dua', cat: 'coffee', name: 'Cà phê dừa', sub: 'Coconut coffee', price: 420, ice: true },
-  { id: 'cf-trung', cat: 'coffee', name: 'Cà phê trứng', sub: 'Egg coffee', price: 420, ice: false },
+  { id: 'cf-trung', cat: 'coffee', name: 'Cà phê trứng', sub: 'Egg coffee', price: 420, ice: true },
   { id: 'bac-xiu', cat: 'coffee', name: 'Bạc xỉu', sub: 'Milk with a little coffee', price: 340, ice: true },
   { id: 'bac-xiu-muoi', cat: 'coffee', name: 'Bạc xỉu kem muối', sub: 'Salted cream', price: 390, ice: true },
 
