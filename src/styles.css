@@ -455,7 +455,7 @@ button:disabled {
 
 .finish {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 2fr;
   gap: 8px;
   margin-top: 6px;
 }
@@ -477,8 +477,6 @@ button:disabled {
 }
 
 .finish-later {
-  grid-column: 1 / -1;
-  min-height: 48px !important;
   background: var(--cream);
   border: 2px solid var(--line) !important;
 }
@@ -546,7 +544,7 @@ button:disabled {
 
 .sums {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin: 12px 0;
 }

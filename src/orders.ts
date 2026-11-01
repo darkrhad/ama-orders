@@ -20,15 +20,12 @@ export type Order = {
   createdAt: number;
   items: Item[];
   paid: boolean;
-  payment?: Payment;
   delivered?: boolean;
   deliveredAt?: number; // last time it was marked delivered
 };
 
 // Still needs something: payment or delivery.
 export const isOpen = (o: Order) => o.items.length > 0 && !(o.paid && o.delivered);
-
-export type Payment = 'cash' | 'card';
 
 // Added after the order was delivered (a table asking for more): still to make.
 export const isNew = (o: Order, i: Item) =>
@@ -103,9 +100,7 @@ export function useOrders() {
         ...o,
         items: o.items.map((i) => (i.uid === itemUid ? { ...i, [opt]: !i[opt] } : i)),
       })),
-    // null = not paid yet
-    setPaid: (orderId: string, payment: Payment | null) =>
-      updateOrder(orderId, (o) => ({ ...o, paid: payment !== null, payment: payment ?? undefined })),
+    setPaid: (orderId: string, paid: boolean) => updateOrder(orderId, (o) => ({ ...o, paid })),
     setDelivered: (orderId: string, delivered: boolean) =>
       updateOrder(orderId, (o) => (delivered ? { ...o, delivered, deliveredAt: Date.now() } : { ...o, delivered })),
     open: (orderId: string) => setState((s) => ({ ...s, currentId: orderId })),

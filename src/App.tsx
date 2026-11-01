@@ -1,34 +1,11 @@
 import { useState } from 'react';
 import { CATEGORIES, MENU, rsd, type Category, type Product } from './menu';
-import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order, type Payment } from './orders';
+import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order } from './orders';
 
 type Tab = 'menu' | 'orders';
 
 const time = (t: number) =>
   new Date(t).toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
-
-const paidLabel = (o: Order) => (o.payment === 'card' ? '💳 Card ✓' : o.payment === 'cash' ? '💵 Cash ✓' : 'Paid ✓');
-
-// Not paid: one tap on Cash or Card. Paid: one tap undoes it.
-function PayButtons({ order, onPaid }: { order: Order; onPaid: (p: Payment | null) => void }) {
-  if (order.paid) {
-    return (
-      <button className="status paid" onClick={() => onPaid(null)}>
-        {paidLabel(order)}
-      </button>
-    );
-  }
-  return (
-    <>
-      <button className="status unpaid" onClick={() => onPaid('cash')}>
-        💵 Cash
-      </button>
-      <button className="status unpaid" onClick={() => onPaid('card')}>
-        💳 Card
-      </button>
-    </>
-  );
-}
 
 export default function App() {
   const o = useOrders();
@@ -158,7 +135,7 @@ function CurrentOrder(props: {
   onOpen: (id: string) => void;
   onRemoveItem: (uid: string) => void;
   onToggle: (uid: string, opt: 'ice' | 'chilli') => void;
-  onPaid: (payment: Payment | null) => void;
+  onPaid: (paid: boolean) => void;
   onDelivered: (delivered: boolean) => void;
   onClose: () => void;
   onDelete: () => void;
@@ -172,7 +149,7 @@ function CurrentOrder(props: {
           <span>Open</span>
           {waiting.map((w) => (
             <button key={w.id} className={w.paid ? 'paid' : 'unpaid'} onClick={() => props.onOpen(w.id)}>
-              #{w.no} <small>{w.paid ? (w.payment ?? 'paid') : rsd(orderTotal(w))}</small>
+              #{w.no} <small>{w.paid ? 'paid' : rsd(orderTotal(w))}</small>
               {!w.delivered && <i title="Preparing">●</i>}
             </button>
           ))}
@@ -191,7 +168,9 @@ function CurrentOrder(props: {
             <span className="time">{time(order.createdAt)}</span>
           </div>
           <div className="statuses">
-            <PayButtons order={order} onPaid={props.onPaid} />
+            <button className={`status ${order.paid ? 'paid' : 'unpaid'}`} onClick={() => props.onPaid(!order.paid)}>
+              {order.paid ? 'Paid ✓' : 'Not paid'}
+            </button>
             <button className={`status ${order.delivered ? 'delivered' : 'preparing'}`} onClick={() => props.onDelivered(!order.delivered)}>
               {order.delivered ? 'Delivered ✓' : 'Preparing'}
             </button>
@@ -244,18 +223,15 @@ function CurrentOrder(props: {
             </div>
           ) : (
             <div className="finish">
-              {(['cash', 'card'] as const).map((p) => (
-                <button
-                  key={p}
-                  className="finish-paid"
-                  onClick={() => {
-                    props.onPaid(p);
-                    props.onClose();
-                  }}
-                >
-                  {p === 'cash' ? '💵 Cash · next' : '💳 Card · next'}
-                </button>
-              ))}
+              <button
+                className="finish-paid"
+                onClick={() => {
+                  props.onPaid(true);
+                  props.onClose();
+                }}
+              >
+                Paid ✓ · next
+              </button>
               <button className="finish-later" onClick={props.onClose}>
                 Pay later · next
               </button>
@@ -278,7 +254,7 @@ function CurrentOrder(props: {
 function OrdersList(props: {
   orders: Order[];
   currentId: string | null;
-  onPaid: (id: string, payment: Payment | null) => void;
+  onPaid: (id: string, paid: boolean) => void;
   onDelivered: (id: string, delivered: boolean) => void;
   onOpen: (id: string) => void;
 }) {
@@ -294,8 +270,7 @@ function OrdersList(props: {
     ? ofDay.filter(isOpen).sort((a, b) => a.createdAt - b.createdAt)
     : [...ofDay].sort((a, b) => b.createdAt - a.createdAt);
   const sum = (list: Order[]) => list.reduce((s, o) => s + orderTotal(o), 0);
-  const cardTotal = sum(ofDay.filter((o) => o.paid && o.payment === 'card'));
-  const cashTotal = sum(ofDay.filter((o) => o.paid && o.payment !== 'card'));
+  const paidTotal = sum(ofDay.filter((o) => o.paid));
   const unpaidTotal = sum(ofDay.filter((o) => !o.paid));
 
   const sold = new Map<string, number>();
@@ -330,12 +305,8 @@ function OrdersList(props: {
           <strong>{ofDay.length}</strong>
         </div>
         <div>
-          <span>💵 Cash</span>
-          <strong className="paid">{rsd(cashTotal)}</strong>
-        </div>
-        <div>
-          <span>💳 Card</span>
-          <strong className="paid">{rsd(cardTotal)}</strong>
+          <span>Paid</span>
+          <strong className="paid">{rsd(paidTotal)}</strong>
         </div>
         <div>
           <span>Not paid</span>
@@ -343,7 +314,7 @@ function OrdersList(props: {
         </div>
         <div>
           <span>Total</span>
-          <strong>{rsd(cashTotal + cardTotal + unpaidTotal)}</strong>
+          <strong>{rsd(paidTotal + unpaidTotal)}</strong>
         </div>
       </div>
 
@@ -364,7 +335,9 @@ function OrdersList(props: {
                 </p>
               )}
               <div className="card-actions">
-                <PayButtons order={o} onPaid={(p) => props.onPaid(o.id, p)} />
+                <button className={`status ${o.paid ? 'paid' : 'unpaid'}`} onClick={() => props.onPaid(o.id, !o.paid)}>
+                  {o.paid ? 'Paid ✓' : 'Not paid'}
+                </button>
                 <button className={`status ${o.delivered ? 'delivered' : 'preparing'}`} onClick={() => props.onDelivered(o.id, !o.delivered)}>
                   {o.delivered ? 'Delivered ✓' : 'Preparing'}
                 </button>
