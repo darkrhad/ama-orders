@@ -47,4 +47,5 @@ export const MENU: Product[] = [
 ];
 
 const rsdFormat = new Intl.NumberFormat('sr-RS', { maximumFractionDigits: 0 });
-export const rsd = (n: number) => `${rsdFormat.format(n)} RSD`;
+export const num = (n: number) => rsdFormat.format(n);
+export const rsd = (n: number) => `${num(n)} RSD`;

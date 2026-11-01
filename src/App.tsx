@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ProductArt from './Art';
 import Backup from './Backup';
 import FullScreen from './FullScreen';
-import { CATEGORIES, MENU, rsd, type Category, type Product } from './menu';
+import { CATEGORIES, MENU, num, rsd, type Category, type Product } from './menu';
 import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order } from './orders';
 
 type Tab = 'menu' | 'orders';
@@ -85,13 +85,12 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
               <div key={p.id} className={`product ${n > 0 ? 'in' : ''}`}>
                 {n > 0 && <span className="count">×{n}</span>}
                 <button className="product-main" onClick={() => onAdd(p)}>
-                  <span className="name">{p.name}</span>
-                  {/* Only the Vietnamese name; the beans keep their strength. */}
-                  {p.cat === 'beans' && <span className="sub">{p.sub}</span>}
-                  <span className="foot">
-                    <span className="price">{rsd(p.price)}</span>
-                    <ProductArt id={p.id} />
+                  {/* Compact: the Vietnamese name and a drawing; prices are in the order. */}
+                  <span className="label">
+                    <span className="name">{p.name}</span>
+                    {p.cat === 'beans' && <span className="sub">{p.sub}</span>}
                   </span>
+                  <ProductArt id={p.id} />
                 </button>
                 {split && (
                   <div className="halves">
@@ -163,7 +162,7 @@ function CurrentOrder(props: {
               className={`${w.paid ? 'paid' : 'unpaid'} ${w.id === order?.id ? 'here' : ''}`}
               onClick={() => (w.id === order?.id ? props.onClose() : props.onOpen(w.id))}
             >
-              #{w.no} <small>{w.paid ? 'paid' : rsd(orderTotal(w))}</small>
+              #{w.no} <small>{w.paid ? 'paid' : num(orderTotal(w))}</small>
               {!w.delivered && <i title="Preparing">●</i>}
             </button>
           ))}
@@ -202,7 +201,7 @@ function CurrentOrder(props: {
                       {g.name}
                       {g.fresh && <span className="new">NEW</span>}
                     </span>
-                    <span className="price">{rsd(g.price * g.uids.length)}</span>
+                    <span className="price">{num(g.price * g.uids.length)}</span>
                     <button className="remove" onClick={() => props.onRemoveItem(last)} aria-label="Remove one">
                       −
                     </button>
@@ -325,11 +324,11 @@ function OrdersList(props: {
         </div>
         <div>
           <span>Paid</span>
-          <strong className="paid">{rsd(paidTotal)}</strong>
+          <strong className="paid">{num(paidTotal)}</strong>
         </div>
         <div>
           <span>Not paid</span>
-          <strong className="unpaid">{rsd(unpaidTotal)}</strong>
+          <strong className="unpaid">{num(unpaidTotal)}</strong>
         </div>
         <div>
           <span>Total</span>
@@ -345,7 +344,7 @@ function OrdersList(props: {
               <div className="card-head">
                 <strong>#{o.no}</strong>
                 <span className="time">{time(o.createdAt)}</span>
-                <span className="card-total">{rsd(orderTotal(o))}</span>
+                <span className="card-total">{num(orderTotal(o))}</span>
               </div>
               <p className="card-items">{summarize(o.items.filter((i) => !isNew(o, i)))}</p>
               {o.items.some((i) => isNew(o, i)) && (
