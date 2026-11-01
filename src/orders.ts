@@ -18,6 +18,7 @@ export type Order = {
   no: number; // per day, from 1
   day: string; // YYYY-MM-DD, local
   createdAt: number;
+  updatedAt?: number; // for the backup: what changed since the last one
   items: Item[];
   paid: boolean;
   delivered?: boolean;
@@ -31,7 +32,8 @@ export const isOpen = (o: Order) => o.items.length > 0 && !(o.paid && o.delivere
 export const isNew = (o: Order, i: Item) =>
   !o.delivered && o.deliveredAt !== undefined && (i.addedAt ?? 0) > o.deliveredAt;
 
-type State = { orders: Order[]; currentId: string | null };
+// `deleted`: ids removed here and not yet removed from the backup.
+type State = { orders: Order[]; currentId: string | null; deleted?: string[] };
 
 const KEY = 'ama-orders-v1';
 
@@ -70,7 +72,10 @@ export function useOrders() {
     state.orders.find((o) => o.id === state.currentId && o.day === dayKey(Date.now())) ?? null;
 
   const updateOrder = (id: string, fn: (o: Order) => Order) =>
-    setState((s) => ({ ...s, orders: s.orders.map((o) => (o.id === id ? fn(o) : o)) }));
+    setState((s) => ({
+      ...s,
+      orders: s.orders.map((o) => (o.id === id ? { ...fn(o), updatedAt: Date.now() } : o)),
+    }));
 
   const add = (p: Product, opt: Partial<Item> = {}) => {
     const item: Item = { uid: uid(), productId: p.id, name: p.name, price: p.price, ice: p.ice, chilli: p.chilli, addedAt: Date.now(), ...opt };
@@ -80,17 +85,21 @@ export function useOrders() {
       const open = s.orders.find((o) => o.id === s.currentId && o.day === today && !o.paid);
       if (open) {
         // More items for a delivered order go back to the kitchen.
-        const next = { ...open, items: [...open.items, item], delivered: false };
+        const next = { ...open, items: [...open.items, item], delivered: false, updatedAt: Date.now() };
         return { ...s, orders: s.orders.map((o) => (o.id === open.id ? next : o)) };
       }
       const no = Math.max(0, ...s.orders.filter((o) => o.day === today).map((o) => o.no)) + 1;
       const order: Order = { id: uid(), no, day: today, createdAt: Date.now(), items: [item], paid: false };
-      return { orders: [...s.orders, order], currentId: order.id };
+      return { ...s, orders: [...s.orders, order], currentId: order.id };
     });
   };
 
   return {
     orders: state.orders,
+    deleted: state.deleted ?? [],
+    // After a backup: those deletions are done remotely.
+    clearDeleted: (ids: string[]) =>
+      setState((s) => ({ ...s, deleted: (s.deleted ?? []).filter((id) => !ids.includes(id)) })),
     current,
     add,
     removeItem: (orderId: string, itemUid: string) =>
@@ -109,6 +118,7 @@ export function useOrders() {
       setState((s) => ({
         orders: s.orders.filter((o) => o.id !== orderId),
         currentId: s.currentId === orderId ? null : s.currentId,
+        deleted: [...(s.deleted ?? []), orderId],
       })),
   };
 }

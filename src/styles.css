@@ -107,6 +107,122 @@ button:disabled {
   font-size: 13px;
 }
 
+/* ---------- backup ---------- */
+
+.tabs {
+  align-items: center;
+}
+
+.backup {
+  margin-left: 10px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  border: 2px solid #5a4030 !important;
+  color: var(--cream);
+  font-weight: 600;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.15;
+}
+
+.backup small {
+  font-size: 12px;
+  font-weight: 600;
+  color: #b9a58e;
+}
+
+.backup.pending small {
+  color: var(--gold);
+}
+
+.toast {
+  position: fixed;
+  top: calc(70px + env(safe-area-inset-top));
+  right: 16px;
+  z-index: 20;
+  max-width: 360px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-weight: 600;
+  text-align: left;
+  box-shadow: 0 6px 20px rgba(42, 23, 11, 0.25);
+}
+
+.toast.ok {
+  background: #dcefd9;
+  color: var(--green);
+}
+
+.toast.error {
+  background: #fbe3df;
+  color: var(--red);
+}
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(42, 23, 11, 0.55);
+  display: grid;
+  place-items: start center;
+  padding-top: 12vh;
+}
+
+.login {
+  width: min(440px, 92vw);
+  background: var(--paper);
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login h2 {
+  margin: 0;
+  font-family: var(--display);
+}
+
+.login p {
+  margin: 0;
+}
+
+.login input {
+  font: inherit;
+  font-size: 18px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: #fff;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.login-error {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.login-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+}
+
+.login-actions button {
+  min-height: 54px;
+  border-radius: 12px;
+  font-weight: 700;
+  background: var(--cream);
+}
+
+.login-actions .go {
+  background: var(--green);
+  color: #fff;
+}
+
 /* ---------- menu screen ---------- */
 
 .menu-screen {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Backup from './Backup';
 import { CATEGORIES, MENU, rsd, type Category, type Product } from './menu';
 import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order } from './orders';
 
@@ -26,6 +27,7 @@ export default function App() {
           <button className={tab === 'orders' ? 'on' : ''} onClick={() => setTab('orders')}>
             Orders{open.length > 0 && <span className="badge">{open.length} open</span>}
           </button>
+          <Backup orders={o.orders} deleted={o.deleted} onDone={o.clearDeleted} />
         </nav>
       </header>
 
