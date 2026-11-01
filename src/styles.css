@@ -163,10 +163,20 @@ button:disabled {
   overflow: hidden;
 }
 
-.cat-food .product { border-color: #e9b9a0; }
-.cat-coffee .product { border-color: #c9a27a; }
-.cat-beans .product { border-color: #b8a58a; }
-.cat-drinks .product { border-color: #a9c4a0; }
+/* Each group has its own colour, so it's found at a glance. */
+.cat-food { --tile: #fbd9cc; --edge: #e39a80; --head: #b23d1c; }
+.cat-coffee { --tile: #ecd5b8; --edge: #b88a5a; --head: #6b3f17; }
+.cat-beans { --tile: #e2e0c4; --edge: #a8a374; --head: #5b5a2a; }
+.cat-drinks { --tile: #d3ead5; --edge: #85b98c; --head: #2f6b3a; }
+
+.product {
+  background: var(--tile) !important;
+  border-color: var(--edge) !important;
+}
+
+.cat h2 {
+  color: var(--head) !important;
+}
 
 .product-main {
   flex: 1;
@@ -214,13 +224,17 @@ button:disabled {
   font-size: 14px;
 }
 
+.halves {
+  border-top-color: var(--edge) !important;
+}
+
 .halves button + button {
-  border-left: 2px solid var(--line);
+  border-left: 2px solid var(--edge);
 }
 
 .product.in {
-  background: #fff1cf;
-  border-color: var(--gold) !important;
+  border-color: var(--ink) !important;
+  box-shadow: inset 0 0 0 2px var(--ink);
 }
 
 .count {
