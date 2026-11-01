@@ -1,5 +1,5 @@
 // The menu. Prices are in RSD and are placeholders: change them here.
-// `ice` / `chilli` give the product that option, with its default value.
+// `ice` / `chilli` / `cilantro` give the product that option, with its default value.
 
 export type Category = 'food' | 'coffee' | 'beans' | 'drinks';
 
@@ -11,6 +11,7 @@ export type Product = {
   cat: Category;
   ice?: boolean;
   chilli?: boolean;
+  cilantro?: boolean;
 };
 
 export const CATEGORIES: { id: Category; label: string }[] = [
@@ -28,8 +29,8 @@ export const MENU: Product[] = [
   { id: 'bac-xiu', cat: 'coffee', name: 'Bạc xỉu', sub: 'Milk with a little coffee', price: 340, ice: true },
   { id: 'bac-xiu-muoi', cat: 'coffee', name: 'Bạc xỉu kem muối', sub: 'Bạc xỉu, salted cream', price: 390, ice: true },
 
-  { id: 'bm-heo-quay', cat: 'food', name: 'Bánh mì heo quay', sub: 'Roast pork baguette', price: 690, chilli: true },
-  { id: 'bm-opla', cat: 'food', name: 'Bánh mì ốp la', sub: 'Fried egg baguette', price: 550, chilli: true },
+  { id: 'bm-heo-quay', cat: 'food', name: 'Bánh mì heo quay', sub: 'Roast pork baguette', price: 690, chilli: true, cilantro: true },
+  { id: 'bm-opla', cat: 'food', name: 'Bánh mì ốp la', sub: 'Fried egg baguette', price: 550, chilli: true, cilantro: true },
   { id: 'cha-gio', cat: 'food', name: 'Chả giò', sub: 'Fried spring rolls', price: 490 },
   { id: 'bun-thit-nuong', cat: 'food', name: 'Bún thịt nướng', sub: 'Noodles, grilled pork', price: 890 },
   { id: 'com-tam', cat: 'food', name: 'Cơm tấm', sub: 'Broken rice, pork', price: 890 },

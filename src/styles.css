@@ -540,6 +540,11 @@ button:disabled {
   color: var(--ice);
 }
 
+.opt.cilantro {
+  background: #dcefd9;
+  color: var(--green);
+}
+
 .opt.chilli {
   background: #fbe3df;
   color: var(--red);

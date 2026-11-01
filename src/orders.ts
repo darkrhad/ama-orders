@@ -10,6 +10,7 @@ export type Item = {
   price: number;
   ice?: boolean;
   chilli?: boolean;
+  cilantro?: boolean;
   addedAt?: number;
 };
 
@@ -78,7 +79,7 @@ export function useOrders() {
     }));
 
   const add = (p: Product, opt: Partial<Item> = {}) => {
-    const item: Item = { uid: uid(), productId: p.id, name: p.name, price: p.price, ice: p.ice, chilli: p.chilli, addedAt: Date.now(), ...opt };
+    const item: Item = { uid: uid(), productId: p.id, name: p.name, price: p.price, ice: p.ice, chilli: p.chilli, cilantro: p.cilantro, addedAt: Date.now(), ...opt };
     setState((s) => {
       const today = dayKey(Date.now());
       // A paid order is never added to: the extras would hide as paid. Start a new one instead.
@@ -104,7 +105,7 @@ export function useOrders() {
     add,
     removeItem: (orderId: string, itemUid: string) =>
       updateOrder(orderId, (o) => ({ ...o, items: o.items.filter((i) => i.uid !== itemUid) })),
-    toggleOption: (orderId: string, itemUid: string, opt: 'ice' | 'chilli') =>
+    toggleOption: (orderId: string, itemUid: string, opt: 'ice' | 'chilli' | 'cilantro') =>
       updateOrder(orderId, (o) => ({
         ...o,
         items: o.items.map((i) => (i.uid === itemUid ? { ...i, [opt]: !i[opt] } : i)),

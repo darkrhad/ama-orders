@@ -116,15 +116,15 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
   );
 }
 
-type Group = { key: string; name: string; price: number; ice?: boolean; chilli?: boolean; fresh: boolean; uids: string[] };
+type Group = { key: string; name: string; price: number; ice?: boolean; chilli?: boolean; cilantro?: boolean; fresh: boolean; uids: string[] };
 
 // Same product with the same options shows as one line, "2×".
 function group(o: Order): Group[] {
   const groups = new Map<string, Group>();
   for (const i of o.items) {
     const fresh = isNew(o, i);
-    const key = `${i.productId}|${i.ice}|${i.chilli}|${fresh}`;
-    const g = groups.get(key) ?? { key, name: i.name, price: i.price, ice: i.ice, chilli: i.chilli, fresh, uids: [] };
+    const key = `${i.productId}|${i.ice}|${i.chilli}|${i.cilantro}|${fresh}`;
+    const g = groups.get(key) ?? { key, name: i.name, price: i.price, ice: i.ice, chilli: i.chilli, cilantro: i.cilantro, fresh, uids: [] };
     g.uids.push(i.uid);
     groups.set(key, g);
   }
@@ -136,7 +136,7 @@ function CurrentOrder(props: {
   waiting: Order[];
   onOpen: (id: string) => void;
   onRemoveItem: (uid: string) => void;
-  onToggle: (uid: string, opt: 'ice' | 'chilli') => void;
+  onToggle: (uid: string, opt: 'ice' | 'chilli' | 'cilantro') => void;
   onPaid: (paid: boolean) => void;
   onDelivered: (delivered: boolean) => void;
   onClose: () => void;
@@ -204,6 +204,11 @@ function CurrentOrder(props: {
                     {g.chilli !== undefined && (
                       <button className={`opt ${g.chilli ? 'chilli' : 'mild'}`} onClick={() => props.onToggle(last, 'chilli')}>
                         {g.chilli ? '🌶 Chilli' : 'No chilli'}
+                      </button>
+                    )}
+                    {g.cilantro !== undefined && (
+                      <button className={`opt ${g.cilantro ? 'cilantro' : 'plain'}`} onClick={() => props.onToggle(last, 'cilantro')}>
+                        {g.cilantro ? '🌿 Cilantro' : 'No cilantro'}
                       </button>
                     )}
                   </div>
@@ -370,11 +375,15 @@ function OrdersList(props: {
   );
 }
 
-// "2× Cà phê sữa (ice), Bánh mì heo quay (no chilli)"
+// "2× Cà phê sữa (ice), Bánh mì heo quay (no chilli, cilantro)"
 function summarize(items: Item[]) {
   const counts = new Map<string, number>();
   for (const i of items) {
-    const opts = [i.ice === undefined ? '' : i.ice ? 'ice' : 'no ice', i.chilli === undefined ? '' : i.chilli ? 'chilli' : 'no chilli'].filter(Boolean);
+    const opts = [
+      i.ice === undefined ? '' : i.ice ? 'ice' : 'no ice',
+      i.chilli === undefined ? '' : i.chilli ? 'chilli' : 'no chilli',
+      i.cilantro === undefined ? '' : i.cilantro ? 'cilantro' : 'no cilantro',
+    ].filter(Boolean);
     const key = opts.length ? `${i.name} (${opts.join(', ')})` : i.name;
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
