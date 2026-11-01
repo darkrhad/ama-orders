@@ -1,0 +1,11 @@
+{
+  "name": "ama coffee · Orders",
+  "short_name": "ama orders",
+  "display": "standalone",
+  "background_color": "#fbf1dc",
+  "theme_color": "#2a170b",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
