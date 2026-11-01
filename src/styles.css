@@ -264,6 +264,16 @@ button:disabled {
   gap: 12px;
 }
 
+/* Beans and drinks share a row: both groups stretch, so every tile in it has the same height. */
+.menu .row > .cat {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu .row .grid {
+  flex: 1;
+}
+
 .cat-beans .grid {
   grid-template-columns: repeat(3, 1fr);
 }
