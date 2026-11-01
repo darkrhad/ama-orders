@@ -14,7 +14,7 @@ Firestore, only when tapped.
 2. **Build → Firestore Database → Create database** (production mode, region `eur3` or a Europe one).
 3. **Build → Authentication → Get started → Email/Password → Enable**; then **Users → Add user**:
    the café login (email + password).
-4. **Firestore → Rules**: paste `firestore.rules` with the café email in place of `CAFE_EMAIL_HERE` → **Publish**.
+4. **Firestore → Rules**: paste `firestore.rules` (it allows only the café user's UID) → **Publish**.
 5. **Project settings → Your apps → Web (`</>`)** → register an app → copy the config into
    `.env.local` (names in `.env.example`), and on Vercel as environment variables.
 6. On the iPad: tap **☁ Backup**, sign in once with the café login.

@@ -1,10 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only the café login may back up. Put its email here.
+    // Only the café login (Authentication → Users) may back up.
     match /orders/{id} {
       allow read, write: if request.auth != null
-        && request.auth.token.email == 'CAFE_EMAIL_HERE';
+        && request.auth.uid == '0vTnELJXgfbOQPz6cnhikSRKeLj2';
     }
   }
 }
