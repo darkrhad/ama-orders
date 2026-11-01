@@ -849,3 +849,32 @@ button:disabled {
 .card-new .new {
   margin-left: 0;
 }
+
+/* Price and drawing share the bottom row; on a narrow tile the drawing drops below the price. */
+.foot {
+  margin-top: auto;
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  column-gap: 0;
+}
+
+.product .foot .price {
+  margin-top: 0;
+}
+
+.art {
+  width: clamp(28px, 3.2vw, 44px);
+  height: clamp(28px, 3.2vw, 44px);
+  margin-left: auto;
+  margin-bottom: -2px;
+}
+
+/* Small iPads: no room for drawings without scrolling the menu. */
+@media (max-width: 1100px) and (min-width: 1001px) {
+  .art {
+    display: none;
+  }
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ProductArt from './Art';
 import Backup from './Backup';
 import { CATEGORIES, MENU, rsd, type Category, type Product } from './menu';
 import { dayKey, isNew, isOpen, orderTotal, useOrders, type Item, type Order } from './orders';
@@ -83,9 +84,12 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
                 <button className="product-main" onClick={() => onAdd(p)}>
                   <span className="name">{p.name}</span>
                   <span className="sub">{p.sub}</span>
-                  <span className="price">
-                    {rsd(p.price)}
-                    {n > 0 && <span className="count">×{n}</span>}
+                  <span className="foot">
+                    <span className="price">
+                      {rsd(p.price)}
+                      {n > 0 && <span className="count">×{n}</span>}
+                    </span>
+                    <ProductArt id={p.id} />
                   </span>
                 </button>
                 {split && (
