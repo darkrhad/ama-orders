@@ -31,10 +31,10 @@ export const MENU: Product[] = [
 
   { id: 'bm-heo-quay', cat: 'food', name: 'Bánh mì heo quay', sub: 'Roast pork baguette', price: 690, chilli: true, cilantro: true },
   { id: 'bm-opla', cat: 'food', name: 'Bánh mì ốp la', sub: 'Fried egg baguette', price: 550, chilli: true, cilantro: true },
-  { id: 'cha-gio', cat: 'food', name: 'Chả giò', sub: 'Fried spring rolls', price: 490 },
-  { id: 'bun-thit-nuong', cat: 'food', name: 'Bún thịt nướng', sub: 'Noodles, grilled pork', price: 890 },
-  { id: 'com-tam', cat: 'food', name: 'Cơm tấm', sub: 'Broken rice, pork', price: 890 },
-  { id: 'pho-ga', cat: 'food', name: 'Phở gà', sub: 'Chicken noodle soup', price: 790 },
+  { id: 'cha-gio', cat: 'food', name: 'Chả giò', sub: 'Fried spring rolls', price: 490, chilli: true },
+  { id: 'bun-thit-nuong', cat: 'food', name: 'Bún thịt nướng', sub: 'Noodles, grilled pork', price: 890, chilli: true },
+  { id: 'com-tam', cat: 'food', name: 'Cơm tấm', sub: 'Broken rice, pork', price: 890, chilli: true },
+  { id: 'pho-ga', cat: 'food', name: 'Phở gà', sub: 'Chicken noodle soup', price: 790, chilli: true },
 
   { id: 'beans-dray-sap', cat: 'beans', name: 'Dray Sap', sub: '70% Robusta', price: 1800 },
   { id: 'beans-serepok', cat: 'beans', name: 'Serepok', sub: '100% Robusta', price: 2200 },
