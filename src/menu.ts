@@ -14,8 +14,8 @@ export type Product = {
 };
 
 export const CATEGORIES: { id: Category; label: string }[] = [
-  { id: 'food', label: 'Food' },
   { id: 'coffee', label: 'Vietnamese coffee' },
+  { id: 'food', label: 'Food' },
   { id: 'beans', label: 'Beans 0.5 kg' },
   { id: 'drinks', label: 'Drinks' },
 ];

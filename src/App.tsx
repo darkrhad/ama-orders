@@ -104,8 +104,8 @@ function Menu({ order, onAdd }: { order: Order | null; onAdd: (p: Product, opt?:
   };
   return (
     <section className="menu">
-      {renderCat('food')}
       {renderCat('coffee')}
+      {renderCat('food')}
       <div className="row">
         {renderCat('beans')}
         {renderCat('drinks')}
