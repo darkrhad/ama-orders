@@ -375,14 +375,14 @@ function OrdersList(props: {
   );
 }
 
-// "2× Cà phê sữa (ice), Bánh mì heo quay (no chilli, cilantro)"
+// "2× Cà phê sữa (🧊 ice), Bánh mì heo quay (no chilli, 🌿 cilantro)"
 function summarize(items: Item[]) {
   const counts = new Map<string, number>();
   for (const i of items) {
     const opts = [
-      i.ice === undefined ? '' : i.ice ? 'ice' : 'no ice',
-      i.chilli === undefined ? '' : i.chilli ? 'chilli' : 'no chilli',
-      i.cilantro === undefined ? '' : i.cilantro ? 'cilantro' : 'no cilantro',
+      i.ice === undefined ? '' : i.ice ? '🧊 ice' : 'no ice',
+      i.chilli === undefined ? '' : i.chilli ? '🌶 chilli' : 'no chilli',
+      i.cilantro === undefined ? '' : i.cilantro ? '🌿 cilantro' : 'no cilantro',
     ].filter(Boolean);
     const key = opts.length ? `${i.name} (${opts.join(', ')})` : i.name;
     counts.set(key, (counts.get(key) ?? 0) + 1);
